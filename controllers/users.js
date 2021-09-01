@@ -81,10 +81,10 @@ const Login = async (req, res) => {
   }
 };
 
-const Account = (req, res) => {
+const Account = async (req, res) => {
   try {
     const { userId } = req.body;
-    const user = User.findById(userId).select("-__v -passowrd -notes");
+    const user = await User.findById(userId).select("-__v -password -notes");
     res.json({
       status: true,
       message: "user Account fetched successfully",
