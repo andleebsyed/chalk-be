@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
   res.json({ status: true, message: "backend of chalk acessed successfully" });
 });
 
-app.use("/users", userRoute);
+app.use("/user", userRoute);
 app.use(routeNotFound);
 app.use(errorHandler);
 app.listen(9000 || process.env.PORT, () => console.log("app up and running"));
