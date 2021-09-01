@@ -106,7 +106,7 @@ const UpdateAccount = async (req, res) => {
     async function checkForExistingEmail() {
       const ifEmailPresent = await User.findOne({ email: newEmail });
       if (ifEmailPresent && !ifEmailPresent._id.equals(userId)) {
-        return res.json({
+        return res.status(500).json({
           status: false,
           unique: false,
           message: "email already in use",
@@ -119,7 +119,7 @@ const UpdateAccount = async (req, res) => {
     async function checkForExistingUserName() {
       const ifUsernamePresent = await User.findOne({ username: newUsername });
       if (ifUsernamePresent && !ifUsernamePresent._id.equals(userId)) {
-        return res.json({
+        return res.status(500).json({
           status: false,
           unique: false,
           message: "username already in use",
@@ -140,7 +140,7 @@ const UpdateAccount = async (req, res) => {
       return res.json({
         status: true,
         message: "User Updated successfully",
-        response,
+        account: response,
       });
     }
   } catch (error) {
