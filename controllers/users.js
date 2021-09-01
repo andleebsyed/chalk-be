@@ -153,4 +153,28 @@ const UpdateAccount = async (req, res) => {
     });
   }
 };
-module.exports = { SignUp, Login, Account, UpdateAccount };
+
+const UpdatePassword = async (req, res) => {
+  try {
+    const { userId, oldPassword, newPassword } = req.body;
+    const currentUser = await User.findById(userId);
+    const validPassword = await bcrypt.compare(
+      oldPassword,
+      currentUser.password
+    );
+    if (validPassword) {
+      const salt = await bcrypt.genSalt(10);
+      currentUser.password = await bcrypt.hash(newPassword, salt);
+      await currentUser.save();
+      res.json({ status: true, message: "Password updated" });
+    } else {
+      res.json({
+        status: false,
+        message: "Current Password incorrect.Try again with correct password.",
+      });
+    }
+  } catch (error) {
+    res.json({ status: false, message: error.message });
+  }
+};
+module.exports = { SignUp, Login, Account, UpdateAccount, UpdatePassword };
