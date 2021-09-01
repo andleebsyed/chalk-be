@@ -80,4 +80,22 @@ const Login = async (req, res) => {
     });
   }
 };
-module.exports = { SignUp, Login };
+
+const Account = (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = User.findById(userId).select("-__v -passowrd -notes");
+    res.json({
+      status: true,
+      message: "user Account fetched successfully",
+      account: user,
+    });
+  } catch (error) {
+    res.json({
+      status: false,
+      message: "couldn't fetch user account",
+      errorDetail: error?.message,
+    });
+  }
+};
+module.exports = { SignUp, Login, Account };
