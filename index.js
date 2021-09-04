@@ -5,6 +5,7 @@ const { errorHandler } = require("./middlewares/errorHandler");
 const { routeNotFound } = require("./middlewares/routeNotFound");
 const { userRoute } = require("./routes/user-routes");
 const { labelRoute } = require("./routes/label-route");
+const { verifyToken } = require("./middlewares/verifyToken");
 require("dotenv").config();
 
 const app = express();
@@ -16,7 +17,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/user", userRoute);
-app.use("/label", labelRoute);
+app.use("/label", verifyToken, labelRoute);
 app.use(routeNotFound);
 app.use(errorHandler);
 app.listen(9000 || process.env.PORT, () => console.log("app up and running"));
