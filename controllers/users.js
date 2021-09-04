@@ -57,6 +57,10 @@ const Login = async (req, res) => {
           message: "logged in successfully",
           token,
           userId: ourUser._id,
+          notesData: {
+            labels: ourUser.labels,
+            notess: ourUser.notes,
+          },
         });
       } else {
         res.json({
@@ -84,7 +88,9 @@ const Login = async (req, res) => {
 const Account = async (req, res) => {
   try {
     const { userId } = req.body;
-    const user = await User.findById(userId).select("-__v -password -notes");
+    const user = await User.findById(userId).select(
+      "-__v -password -notes -labels -notes"
+    );
     res.json({
       status: true,
       message: "user Account fetched successfully",
@@ -98,7 +104,25 @@ const Account = async (req, res) => {
     });
   }
 };
-
+const FetchNotesData = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const noteData = await User.findById(userId)
+      .select("labels")
+      .populate("labels");
+    res.json({
+      status: true,
+      message: "Notes data  fetched successfully",
+      noteData,
+    });
+  } catch (error) {
+    res.json({
+      status: false,
+      message: "couldn't fetch Notes data of said user",
+      errorDetail: error?.message,
+    });
+  }
+};
 const UpdateAccount = async (req, res) => {
   let msg;
   try {
@@ -177,4 +201,11 @@ const UpdatePassword = async (req, res) => {
     res.json({ status: false, message: error.message });
   }
 };
-module.exports = { SignUp, Login, Account, UpdateAccount, UpdatePassword };
+module.exports = {
+  SignUp,
+  Login,
+  Account,
+  UpdateAccount,
+  UpdatePassword,
+  FetchNotesData,
+};
