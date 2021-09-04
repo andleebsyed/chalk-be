@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const LabelSchema = Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  labelName: { type: String },
+  labelName: { type: String, required: true },
   labelNotes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Note" }],
 });
 
