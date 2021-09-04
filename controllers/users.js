@@ -168,7 +168,7 @@ const UpdatePassword = async (req, res) => {
       await currentUser.save();
       res.json({ status: true, message: "Password updated" });
     } else {
-      res.json({
+      res.status(500).json({
         status: false,
         message: "Current Password incorrect.Try again with correct password.",
       });
