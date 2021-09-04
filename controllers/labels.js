@@ -7,16 +7,14 @@ const AddLabel = async (req, res) => {
     const user = await User.findById(userId);
 
     const label = new Label({ labelName, author: userId });
-    const response = await label.save();
-    const { _id } = response;
-    console.log({ _id });
+    const newLabel = await label.save();
+    const { _id } = newLabel;
     user.labels.push(_id);
-    const updatedUser = await user.save();
+    await user.save();
     res.json({
       status: true,
       message: "label added successfully",
-      response,
-      updatedUser,
+      newLabel,
     });
   } catch (error) {
     res.status(500).json({
