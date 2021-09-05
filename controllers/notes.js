@@ -1,26 +1,35 @@
 const { Note } = require("../models/notes-model");
 const { User } = require("../models/users-model");
-
+const mongoose = require("mongoose");
 const AddNote = async (req, res) => {
   try {
-    console.log("is it coming here ", req.body, req?.files);
-
-    const { userId, title, content, pinned, labels } = req.body;
-    const noteData = { title, content, pinned, labels };
-
+    const { userId, title, content, pinned } = req.body;
+    const labels = JSON.parse(req.body.labels);
+    const labelsKeys = labels.map((label) =>
+      mongoose.Types.ObjectId(label._id)
+    );
+    const noteData = { title, content, pinned };
     const image = req?.files?.image;
     if (image) {
     }
     const newNote = new Note(noteData);
-    const newSavedNote = await newNote.save();
+    let tempSavedNote = await newNote.save();
+    if (labelsKeys) {
+      labelsKeys.map((labelKey) => tempSavedNote.labels.push(labelKey));
+      tempSavedNote = await tempSavedNote.save();
+      Note.populate(tempSavedNote, { path: "labels" }, function (err) {
+        console.log("error occured while saving the labels ", err?.message);
+      });
+    }
+
     user = await User.findById(userId);
-    console.log(user.notes, " user notes should be array");
-    user.notes.push(newSavedNote._id);
-    await user.save();
+    user.notes.push(tempSavedNote._id);
+    const userUpdate = await user.save();
     res.json({
       status: true,
       message: "note added successsfully",
-      newSavedNote,
+      newSavedNote: tempSavedNote,
+      userUpdate,
     });
   } catch (error) {
     res.status(500).json({
