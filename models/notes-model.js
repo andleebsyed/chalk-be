@@ -18,11 +18,7 @@ const NoteSchema = Schema({
   color: {
     type: String,
   },
-  labels: [
-    {
-      type: String,
-    },
-  ],
+  labels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Label" }],
 });
 
 const Note = model("Note", NoteSchema);
