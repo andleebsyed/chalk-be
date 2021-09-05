@@ -108,8 +108,12 @@ const FetchNotesData = async (req, res) => {
   try {
     const { userId } = req.body;
     const noteData = await User.findById(userId)
-      .select("labels")
-      .populate("labels");
+      .select("labels notes ")
+      .populate("notes labels")
+      .populate({
+        path: "notes",
+        populate: { path: "labels" },
+      });
     res.json({
       status: true,
       message: "Notes data  fetched successfully",
