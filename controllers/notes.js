@@ -17,9 +17,7 @@ const AddNote = async (req, res) => {
     if (labelsKeys) {
       labelsKeys.map((labelKey) => tempSavedNote.labels.push(labelKey));
       tempSavedNote = await tempSavedNote.save();
-      Note.populate(tempSavedNote, { path: "labels" }, function (err) {
-        console.log("error occured while saving the labels ", err?.message);
-      });
+      Note.populate(tempSavedNote, { path: "labels" });
     }
 
     user = await User.findById(userId);
