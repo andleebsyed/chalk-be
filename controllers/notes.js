@@ -59,5 +59,44 @@ const AddNote = async (req, res) => {
     });
   }
 };
+const RemovePin = async (req, res) => {
+  try {
+    const { noteId, userId } = req.body;
+    const note = await Note.findById(noteId);
+    note.pinned = false;
+    const response = await note.save();
+    res.json({
+      status: true,
+      message: "pin removed successfully",
+      unPinnedNote: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "failed to remove pin",
+      errorDetail: error?.message,
+    });
+  }
+};
 
-module.exports = { AddNote };
+const PinNote = async (req, res) => {
+  try {
+    const { noteId, userId } = req.body;
+    const note = await Note.findById(noteId);
+    note.pinned = true;
+    const response = await note.save();
+    res.json({
+      status: true,
+      message: "pinned note successfully",
+      pinnedNote: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "failed to pin note",
+      errorDetail: error?.message,
+    });
+  }
+};
+
+module.exports = { AddNote, RemovePin, PinNote };
