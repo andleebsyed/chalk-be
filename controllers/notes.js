@@ -102,11 +102,13 @@ const PinNote = async (req, res) => {
 const UpdateNote = async (req, res) => {
   let msg;
   try {
-    const { title, content, pinned, noteId } = req.body;
+    const { title, content, pinned, noteId, image } = req.body;
     let noteToUpdate = await Note.findById(noteId);
+    console.log({ image });
     noteToUpdate.title = title;
     noteToUpdate.content = content;
     noteToUpdate.pinned = pinned;
+    noteToUpdate.image = image === "null" || "undefined" ? null : image;
     const labels = JSON.parse(req.body?.labels);
     const labelsKeys = labels?.map((label) =>
       mongoose.Types.ObjectId(label._id)
@@ -132,10 +134,11 @@ const UpdateNote = async (req, res) => {
 
     if (labelsKeys) {
       noteToUpdate.labels = [];
+      console.log({ labelsKeys });
       labelsKeys.map((labelKey) => noteToUpdate.labels.push(labelKey));
     }
     let updatedNote = await noteToUpdate.save();
-    Note.populate(updatedNote, { path: "labels" });
+    await Note.populate(updatedNote, { path: "labels" });
 
     return res.json({
       status: true,
