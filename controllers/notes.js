@@ -99,4 +99,59 @@ const PinNote = async (req, res) => {
   }
 };
 
-module.exports = { AddNote, RemovePin, PinNote };
+const UpdateNote = async (req, res) => {
+  try {
+    const { title, content, pinned, noteId } = req.body;
+    console.log(req.body);
+    let noteToUpdate = await Note.findById(noteId);
+    noteToUpdate.title = title;
+    noteToUpdate.content = content;
+    noteToUpdate.pinned = pinned;
+
+    const labels = JSON.parse(req.body?.labels);
+    console.log({ labels });
+    const labelsKeys = labels?.map((label) =>
+      mongoose.Types.ObjectId(label._id)
+    );
+    const image = req?.files?.image;
+    console.log({ image });
+    if (req.files) {
+      if (image !== undefined) {
+        await cloudinary.uploader.upload(
+          image.tempFilePath,
+          async (err, result) => {
+            if (err) {
+              console.log("Error occurred while uploading file");
+            } else {
+              console.log("image uplaod success");
+              const imageLink = result.secure_url;
+              noteToUpdate.image = imageLink;
+            }
+          }
+        );
+      }
+    }
+
+    if (labelsKeys) {
+      noteToUpdate.labels = [];
+      labelsKeys.map((labelKey) => noteToUpdate.labels.push(labelKey));
+    }
+    let updatedNote = await noteToUpdate.save();
+    await Note.populate(updatedNote, { path: "labels" });
+
+    return res.json({
+      status: true,
+      message: "note updated successsfully",
+      updatedNote,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      status: false,
+      message: "failed to update the note",
+      errorDetail: error,
+    });
+  }
+};
+
+module.exports = { AddNote, RemovePin, PinNote, UpdateNote };
