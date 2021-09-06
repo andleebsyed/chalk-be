@@ -65,6 +65,7 @@ const RemovePin = async (req, res) => {
     const note = await Note.findById(noteId);
     note.pinned = false;
     const response = await note.save();
+    await Note.populate(response, { path: "labels" });
     res.json({
       status: true,
       message: "pin removed successfully",
@@ -85,6 +86,7 @@ const PinNote = async (req, res) => {
     const note = await Note.findById(noteId);
     note.pinned = true;
     const response = await note.save();
+    await Note.populate(response, { path: "labels" });
     res.json({
       status: true,
       message: "pinned note successfully",
@@ -134,7 +136,6 @@ const UpdateNote = async (req, res) => {
 
     if (labelsKeys) {
       noteToUpdate.labels = [];
-      console.log({ labelsKeys });
       labelsKeys.map((labelKey) => noteToUpdate.labels.push(labelKey));
     }
     let updatedNote = await noteToUpdate.save();
@@ -154,5 +155,28 @@ const UpdateNote = async (req, res) => {
     });
   }
 };
+const DeletNote = async (req, res) => {
+  try {
+    const { noteId, userId } = req.body;
+    const user = await User.findById(userId);
+    console.log({ user });
+    user.notes = user.notes.filter((userNote) => userNote._id !== noteId);
+    const updatedUser = await user.save();
+    const deleteNoteResponse = await Note.deleteOne({ _id: noteId });
+    res.json({
+      status: true,
+      message: "note deleted successfully",
+      updatedUser,
+      deleteNoteResponse,
+    });
+  } catch (error) {
+    console.log({ error });
+    res.status(500).json({
+      status: false,
+      message: "deletion of note failed",
+      errorDetail: error?.message,
+    });
+  }
+};
 
-module.exports = { AddNote, RemovePin, PinNote, UpdateNote };
+module.exports = { AddNote, RemovePin, PinNote, UpdateNote, DeletNote };
