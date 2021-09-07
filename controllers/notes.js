@@ -110,7 +110,9 @@ const UpdateNote = async (req, res) => {
     noteToUpdate.title = title;
     noteToUpdate.content = content;
     noteToUpdate.pinned = pinned;
-    noteToUpdate.image = image === "null" || "undefined" ? null : image;
+    //null, image was removed from client side
+    //undefined, image  property of note was not touched with from client side
+    noteToUpdate.image = image === "null" ? null : image;
     const labels = JSON.parse(req.body?.labels);
     const labelsKeys = labels?.map((label) =>
       mongoose.Types.ObjectId(label._id)
@@ -159,15 +161,12 @@ const DeletNote = async (req, res) => {
   try {
     const { noteId, userId } = req.body;
     const user = await User.findById(userId);
-    console.log({ user });
     user.notes = user.notes.filter((userNote) => userNote._id !== noteId);
     const updatedUser = await user.save();
     const deleteNoteResponse = await Note.deleteOne({ _id: noteId });
     res.json({
       status: true,
       message: "note deleted successfully",
-      updatedUser,
-      deleteNoteResponse,
     });
   } catch (error) {
     console.log({ error });
