@@ -25,4 +25,20 @@ const AddLabel = async (req, res) => {
   }
 };
 
-module.exports = { AddLabel };
+const DeleteLabel = async (req, res) => {
+  try {
+    const { labelId } = req.body;
+    const response = await Label.deleteOne({ _id: labelId });
+    return res.json({
+      status: true,
+      message: "label deleted successfully",
+      response,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res
+      .status(500)
+      .json({ status: false, message: "failed to delete the label" });
+  }
+};
+module.exports = { AddLabel, DeleteLabel };
