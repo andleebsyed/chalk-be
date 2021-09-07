@@ -106,7 +106,6 @@ const UpdateNote = async (req, res) => {
   try {
     const { title, content, pinned, noteId, image } = req.body;
     let noteToUpdate = await Note.findById(noteId);
-    console.log({ image });
     noteToUpdate.title = title;
     noteToUpdate.content = content;
     noteToUpdate.pinned = pinned;
