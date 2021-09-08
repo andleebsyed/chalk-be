@@ -29,16 +29,17 @@ const DeleteLabel = async (req, res) => {
   try {
     const { labelId } = req.body;
     const response = await Label.deleteOne({ _id: labelId });
-    return res.json({
+    res.json({
       status: true,
       message: "label deleted successfully",
       response,
     });
   } catch (error) {
-    console.log({ error });
-    return res
-      .status(500)
-      .json({ status: false, message: "failed to delete the label" });
+    res.status(500).json({
+      status: false,
+      message: "failed to delete the label",
+      errorDetail: error?.message,
+    });
   }
 };
 module.exports = { AddLabel, DeleteLabel };
