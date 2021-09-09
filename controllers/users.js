@@ -40,7 +40,6 @@ const Login = async (req, res) => {
   try {
     const secret = process.env.SECRET;
     const { userDetails } = req.body;
-    console.log(userDetails);
     const ourUser = await User.findOne({ username: userDetails.username });
     if (ourUser) {
       const validPassword = await bcrypt.compare(
