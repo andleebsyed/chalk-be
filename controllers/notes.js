@@ -24,7 +24,6 @@ const AddNote = async (req, res) => {
           if (err) {
             console.log("Error occurred while uploading file");
           } else {
-            console.log("image uplaod success");
             const imageLink = result.secure_url;
             noteData = {
               ...noteData,
@@ -82,7 +81,7 @@ const RemovePin = async (req, res) => {
 
 const PinNote = async (req, res) => {
   try {
-    const { noteId, userId } = req.body;
+    const { noteId } = req.body;
     const note = await Note.findById(noteId);
     note.pinned = true;
     const response = await note.save();
@@ -161,8 +160,8 @@ const DeletNote = async (req, res) => {
     const { noteId, userId } = req.body;
     const user = await User.findById(userId);
     user.notes = user.notes.filter((userNote) => userNote._id !== noteId);
-    const updatedUser = await user.save();
-    const deleteNoteResponse = await Note.deleteOne({ _id: noteId });
+    await user.save();
+    await Note.deleteOne({ _id: noteId });
     res.json({
       status: true,
       message: "note deleted successfully",

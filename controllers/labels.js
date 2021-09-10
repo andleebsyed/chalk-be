@@ -5,7 +5,6 @@ const AddLabel = async (req, res) => {
   try {
     const { userId, labelName } = req.body;
     const user = await User.findById(userId);
-
     const label = new Label({ labelName, author: userId });
     const newLabel = await label.save();
     const { _id } = newLabel;
