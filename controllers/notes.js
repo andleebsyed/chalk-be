@@ -110,7 +110,7 @@ const UpdateNote = async (req, res) => {
     noteToUpdate.pinned = pinned;
     //null, image was removed from client side
     //undefined, image  property of note was not touched with from client side
-    noteToUpdate.image = image === "null" ? null : image;
+    noteToUpdate.image = image === "null" ? null : noteToUpdate.image;
     const labels = JSON.parse(req.body?.labels);
     const labelsKeys = labels?.map((label) =>
       mongoose.Types.ObjectId(label._id)
