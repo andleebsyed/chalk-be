@@ -25,4 +25,4 @@ app.use("/label", verifyToken, labelRoute);
 app.use("/note", verifyToken, notesRoute);
 app.use(routeNotFound);
 app.use(errorHandler);
-app.listen(9000 || process.env.PORT, () => console.log("app up and running"));
+app.listen(process.env.PORT || 9000, () => console.log("app up and running"));
