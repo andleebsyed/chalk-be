@@ -1,6 +1,7 @@
 const { User } = require("../models/users-model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 const SignUp = async (req, res) => {
   try {
     const secret = process.env.SECRET;
@@ -204,6 +205,34 @@ const UpdatePassword = async (req, res) => {
     res.json({ status: false, message: error.message });
   }
 };
+const GuestAccess = async (req, res) => {
+  try {
+    const secret = process.env.SECRET;
+    const userId = "612e70f979ec5dd9a522a664";
+    const ourUser = await User.findById(mongoose.Types.ObjectId(userId));
+    const token = jwt.sign({ userId: ourUser._id }, secret, {
+      expiresIn: "24h",
+    });
+    res.json({
+      status: true,
+      allowUser: true,
+      message: "logged in successfully",
+      token,
+      userId: ourUser._id,
+      notesData: {
+        labels: ourUser.labels,
+        notess: ourUser.notes,
+      },
+    });
+  } catch (error) {
+    res.json({
+      status: false,
+      errorDetail: error,
+      errorMesssage: error.message,
+    });
+  }
+};
+
 module.exports = {
   SignUp,
   Login,
@@ -211,4 +240,5 @@ module.exports = {
   UpdateAccount,
   UpdatePassword,
   FetchNotesData,
+  GuestAccess,
 };
