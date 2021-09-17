@@ -26,7 +26,12 @@ const AddLabel = async (req, res) => {
 
 const DeleteLabel = async (req, res) => {
   try {
-    const { labelId } = req.body;
+    const { labelId, userId } = req.body;
+    const user = await User.findById(userId);
+    user.labels = user.labels.filter(
+      (labelIdOfUser) => !labelIdOfUser.equals(labelId)
+    );
+    await user.save();
     const response = await Label.deleteOne({ _id: labelId });
     res.json({
       status: true,

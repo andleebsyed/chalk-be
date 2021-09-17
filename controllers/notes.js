@@ -159,7 +159,7 @@ const DeletNote = async (req, res) => {
   try {
     const { noteId, userId } = req.body;
     const user = await User.findById(userId);
-    user.notes = user.notes.filter((userNote) => userNote._id !== noteId);
+    user.notes = user.notes.filter((userNoteId) => !userNoteId.equals(noteId));
     await user.save();
     await Note.deleteOne({ _id: noteId });
     res.json({
