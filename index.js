@@ -1,0 +1,28 @@
+const express = require("express");
+const cors = require("cors");
+const fileUpload = require("express-fileupload");
+const { CreateDatabaseConnection } = require("./db/dbConnection");
+const { errorHandler } = require("./middlewares/errorHandler");
+const { routeNotFound } = require("./middlewares/routeNotFound");
+const { userRoute } = require("./routes/user-routes");
+const { labelRoute } = require("./routes/label-route");
+const { verifyToken } = require("./middlewares/verifyToken");
+const { notesRoute } = require("./routes/notes-route");
+require("dotenv").config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(fileUpload({ useTempFiles: true }));
+
+CreateDatabaseConnection();
+app.get("/", (req, res) => {
+  res.json({ status: true, message: "backend of chalk acessed successfully" });
+});
+
+app.use("/user", userRoute);
+app.use("/label", verifyToken, labelRoute);
+app.use("/note", verifyToken, notesRoute);
+app.use(routeNotFound);
+app.use(errorHandler);
+app.listen(process.env.PORT || 9000, () => console.log("app up and running"));
